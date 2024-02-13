@@ -5,7 +5,7 @@ Download node.js (https://nodejs.org/en ver 20.11.0 LTS)
 Run npm install react @types/react in client folder
 run npm install next in client folder
 npm run dev
-client is now running at
+client is now running at http://localhost:3000/
 
 SERVER:
 In server folder type Python and install from microsoft store (idk what to do with a mac here)
