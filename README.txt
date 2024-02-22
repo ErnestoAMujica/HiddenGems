@@ -12,7 +12,8 @@ In server folder type Python and install from microsoft store (idk what to do wi
 cd server
 pip install flask
 pip install flask_cors
-python3 server.py
+cd into /venv
+run python3 server.py
 server is now running at http://localhost:8080/api/home
 
 
