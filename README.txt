@@ -8,11 +8,8 @@ npm run dev
 client is now running at http://localhost:3000/
 
 SERVER:
-In server folder type Python and install from microsoft store (idk what to do with a mac here)
-cd server
-pip install flask
-pip install flask_cors
-cd into /venv
+install python if not already installed, add to path variable during installation
+run pip install -r ./server/venv/requirements.txt
 run python3 server.py
 server is now running at http://localhost:8080/api/home
 
