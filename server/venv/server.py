@@ -31,7 +31,7 @@ sp_oauth = SpotifyOAuth(
 
 sp = Spotify(auth_manager=sp_oauth)
 
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 @app.route("/api/auth")
 def auth():
@@ -40,10 +40,14 @@ def auth():
         auth_url = sp_oauth.get_authorize_url()
         temp = redirect(auth_url)
         print("TEMP: ",temp)
-        return temp
+        return jsonify({
+            'link': auth_url
+        })
+
     
     #If we are auth'd, display playlists
     return redirect(url_for('get_playlists'))    
+
 
 @app.route('/api/callback')
 def callback():
@@ -56,11 +60,16 @@ def get_playlists():
         auth_url = sp_oauth.get_authorize_url()
         return redirect(auth_url)
 
-    #Collects user playlist data and compiles them into html. Temporary and should def be changed
     playlists = sp.current_user_playlists()
-    playlists_info = [(pl['name'], pl['external_urls']['spotify']) for pl in playlists['items']]
-    playlists_html = '<br>'.join([f'{name}: {url}' for name, url, in playlists_info])
     
+    dog_string = 'https://cdn.discordapp.com/attachments/1182080048178679869/1220095988879065188/poopy.jpg?ex=660db1f0&is=65fb3cf0&hm=13afc196e7f6b4bc6c123c22c6ed462d5d11e2aa41da78987285ab98a79bc90e&'
+    
+    playlists_info_2 = [
+        [pl['name'], pl['external_urls']['spotify'],pl['images'][0]['url']] if len(pl['images']) > 0 
+        else [pl['name'], pl['external_urls']['spotify'],dog_string] for pl in playlists['items']
+        ]
+    
+    playlists_html = '<br>'.join([f'{name}: {url} <br> <img src="{image_url}" alt="lmao">' for name, url, image_url in playlists_info_2])
     return playlists_html
 
 @app.route('/api/logout')

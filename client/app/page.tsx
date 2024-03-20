@@ -1,37 +1,45 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-function page() {
-  const [message, setMessage] = useState("Loading");
-  const [list, setList] = useState([]);
+import { Button } from '@/components/ui/button'
 
-  useEffect(() => {
-    fetch("http://localhost:8080/api/home")
-      .then((response) => response.json())
-      .then((data) => {
-        //general flow:
-        //message = loading
-        //data retrieved
-        //message = data.message, which is in server.py
-        setMessage(data.message);
-        setList(data.list);
-        console.log(data.list);
-
-      });
-  },  []);
-
-  return (
-    <div>
-      <div>{message}</div>
-
-      
-    {list.map((member, index) => (
-      <div key = {index}>{member}</div>
-      ))}
-      </div>
-    //List section is returning an array of stuff from server.py
-    //Running client command is "npm run dev" just in client folder
-    
-  );
+const redirectLogin = async(link: string) => {
+  location.assign(link)
 }
 
-export default page
+function loginPage() {
+
+  console.log('in login func');
+  const[link, setLink] = useState("Loading")
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/auth")
+    .then((response) => response.json())
+    .then((data) => {
+      setLink(data.link);
+    });
+  }, []);
+
+  const handleClick = async() => {
+    redirectLogin(link)
+  }
+
+  return (
+    <div className="loginWrapper">
+      <div className="formWrapper">
+        <div className="left">
+          <h3 className="title">Hidden Gems</h3>
+          <p>Spotify Song Recommendation App</p>
+            <Button onClick={handleClick} className='border-zinc-500 text-zinc-300
+            hover:border-zinc-200 hover:text-zinc-100
+            transition-colors border rounded-full px-8'>
+              Login with Spotify
+            </Button>
+        </div>
+      </div>
+    </div>
+    
+  )
+
+}
+
+export default loginPage
