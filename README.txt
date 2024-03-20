@@ -4,6 +4,7 @@ CLIENT:
 Download node.js (https://nodejs.org/en ver 20.11.0 LTS)
 Run npm install react @types/react in client folder
 run npm install next in client folder
+npm install @radix-ui/themes
 npm run dev
 client is now running at http://localhost:3000/
 
