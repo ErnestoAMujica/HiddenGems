@@ -17,7 +17,7 @@ client_secret = ''
 redirect_uri = 'http://localhost:8080/api/callback'
 
 #Scope permissions, add more permissions to the list as necessary when adding features
-scope = 'playlist-read-private'
+scope = 'playlist-read-private, playlist-modify-public, playlist-modify-private'
 
 cache_handler = FlaskSessionCacheHandler(session)
 sp_oauth = SpotifyOAuth(
@@ -30,8 +30,9 @@ sp_oauth = SpotifyOAuth(
 )
 
 sp = Spotify(auth_manager=sp_oauth)
-
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+#This was in the old version idk if we're using this
+# CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+CORS(app)
 
 @app.route("/api/auth")
 def auth():
@@ -40,19 +41,22 @@ def auth():
         auth_url = sp_oauth.get_authorize_url()
         temp = redirect(auth_url)
         print("TEMP: ",temp)
-        return jsonify({
-            'link': auth_url
-        })
+        #This was also in the old version
+        #return jsonify({
+         #   'link': auth_url
+        #})
 
+        return temp
     
     #If we are auth'd, display playlists
     return redirect(url_for('get_playlists'))    
-
 
 @app.route('/api/callback')
 def callback():
     sp_oauth.get_access_token(request.args['code'])
     return redirect(url_for('get_playlists'))
+
+
 
 @app.route('/api/get_playlists')
 def get_playlists():
@@ -71,6 +75,39 @@ def get_playlists():
     
     playlists_html = '<br>'.join([f'{name}: {url} <br> <img src="{image_url}" alt="lmao">' for name, url, image_url in playlists_info_2])
     return playlists_html
+
+
+@app.route('/api/get_recs')
+def get_recommendations():
+    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
+        auth_url = sp_oauth.get_authorize_url()
+        return redirect(auth_url)
+    playlists = sp.current_user_playlists()
+     #Grabs current users first playlist listed
+    playlistTest = playlists['items'][0]
+    songID = sp.playlist_items(playlistTest['id'])
+    #Fills up songList based on the track ID of the songs in the playlist
+    songList= []
+    for pl in songID['items']:
+        songList.append(pl['track']['id'])
+    #Using the songList we got from the playlist, populates recsongList with recommendations
+    recsongList = sp.recommendations(seed_tracks=songList)
+    #Grabs the ID for the tracks in our new recommendation list
+    track_ids = [track['id'] for track in recsongList['tracks']]
+    #We need the user ID, so grabbing this now
+    currUser = sp.current_user()
+    userID = currUser['id']
+    #Creates the initial playlist
+    sp.user_playlist_create(userID,'grompula', public=False, description = "goaty schwab")
+    #Updates the playlist variable to include the one 
+    playlists = sp.current_user_playlists()
+    #Grabs the playlist ID
+    playlistEdit = (playlists['items'][0]['id'])
+    #Adds the tracks to the playlist
+    sp.user_playlist_add_tracks(userID, playlistEdit, track_ids, position=None)
+    return
+    
+    
 
 @app.route('/api/logout')
 def logout():
