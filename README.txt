@@ -3,8 +3,8 @@ HOW TO GET THIS TO RUN:
 CLIENT:
 Download node.js (https://nodejs.org/en ver 20.11.0 LTS)
 Run npm install react @types/react in client folder
-run npm install next in client folder in client folder
-run npm install @radix-ui/themes
+run npm install next in client folder
+run npm install @radix-ui/themes in client folder
 npm run dev in client folder
 client is now running at http://localhost:3000/
 
