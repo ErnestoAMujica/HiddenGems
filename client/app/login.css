@@ -76,11 +76,11 @@
 }
 
 .loginWrapper{
-  @apply h-screen w-full flex justify-center items-center
+  @apply h-screen w-full flex justify-center items-center bg-primary
 }
 
 .formWrapper{
-  @apply flex items-center border bg-primary shadow-md rounded-xl 
+  @apply flex items-center bg-primary shadow-md rounded-xl 
   overflow-hidden justify-center mx-6 md:w-auto my-4
 }
 

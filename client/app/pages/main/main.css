@@ -75,27 +75,32 @@
   }
 }
 
-.loginWrapper{
-  @apply h-screen w-full flex justify-center items-center
+.outerWrapper{
+  @apply h-screen w-full flex justify-center items-center bg-primary
 }
 
 .formWrapper{
-  @apply flex items-center border bg-primary shadow-md rounded-xl 
+  @apply flex items-center bg-primary shadow-md rounded-xl 
   overflow-hidden justify-center mx-6 md:w-auto my-4
 }
 
-.loginWrapper .center{
+.outerWrapper .center{
   @apply bg-primary md:flex justify-center items-center flex-col
 }
 
-.loginWrapper .center .inner{
-  @apply px-4 py-4 my-4 mx-4 bg-secondary rounded-lg
+.outerWrapper .center .inner{
+  @apply px-4 py-4 my-4 mx-4 bg-secondary rounded-lg justify-center items-center
 }
 
-.loginWrapper .center .inner, .title{
+.outerWrapper .center .inner, .title{
   @apply text-2xl font-semibold text-center
 }
 
-.loginWrapper .center .inner p{
+.outerWrapper .center .inner p{
   @apply text-sm text-center mb-3 font-normal
+}
+
+.outerWrapper .center .inner .playlistWrapper{
+  @apply flex bg-primary shadow-md rounded-md 
+  overflow-hidden w-auto px-4 py-4 my-4 mx-4 hidden
 }
