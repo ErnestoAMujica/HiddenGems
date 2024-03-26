@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import {Button} from '@/components/ui/button'
+import { useToast } from "@/components/ui/use-toast"
 import {
   Card,
   CardContent,
@@ -17,6 +18,7 @@ function main() {
   const[playlistIDs, setIDs] = useState([]);
   const[imageLinks, setImageLinks] = useState([]);
   
+  const[res, setPostResponse] = useState('');
   
   useEffect(() => {
     fetch("http://localhost:8080/api/get_playlists_details")
@@ -41,11 +43,35 @@ function main() {
 
   const onSubmit = async() => {
     var selectedPlaylistID = playlistIDs[playlistNames.findIndex(checkPlaylistName)]
-    console.log(selectedPlaylistID)
+
+    /*
+    let sendData = { "selected_playlist_id": selectedPlaylistID }
+
+    fetch("http://localhost:8080/api/receive_selected_playlist", {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(sendData)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      setPostResponse(data.message)
+    });
+
+    if(res == 'success'){
+      location.assign('http://localhost:3000/pages/recs')
+    }
+
+    //console.log('Sent POST request with selected playlist id: ' + JSON.stringify(sendData))
+    */
+
+    location.assign('http://localhost:3000/pages/recs' + '?plid=' + selectedPlaylistID)
   }
 
+
   return(
-    <div className="outerWrapper">
+    <div className="outerWrapper select-none">
       <div className="formWrapper">
         <div className="center">
           <div className="inner">

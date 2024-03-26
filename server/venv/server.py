@@ -20,6 +20,8 @@ redirect_uri = 'http://localhost:8080/api/callback'
 #Scope permissions, add more permissions to the list as necessary when adding features
 scope = 'playlist-read-private, playlist-modify-public, playlist-modify-private'
 
+default_image = 'https://shorturl.at/belHL'
+
 sp_oauth = SpotifyOAuth(
     client_id=client_id,
     client_secret=client_secret,
@@ -63,7 +65,6 @@ def get_playlists():
         return redirect(auth_url)
 
     playlists = sp.current_user_playlists()
-    
     default_image = 'https://shorturl.at/belHL'
     #default_image = 'https://shorturl.at/fgNP0'    
     playlists_info_2 = [
@@ -79,8 +80,8 @@ def get_playlists():
 @app.route('/api/get_playlists_details')
 def get_playlists_details():
 
+    
     playlists_items = sp.current_user_playlists()['items']
-
     playlist_names = [iter['name'] for iter in playlists_items]
     playlist_ids = [iter['id'] for iter in playlists_items]
 
@@ -94,7 +95,24 @@ def get_playlists_details():
         'playlist_imagelinks' : playlist_imagelinks
     })
 
+@app.route('/api/create_playlist_from_tracks', methods=['POST'])
+def create_playlist_from_tracks():
 
+    response = request.get_json(force=True)
+    track_ids = response['selected_tracks']
+
+    currUser = sp.current_user()
+    userID = currUser['id']
+    print('in fetch')
+    #created_playlist = sp.user_playlist_create(userID,'Test Playlist 2', public=False, description = "Hidden Gems Playlist")
+    #playlist_id = (created_playlist['id'])
+    playlist_id = ('12bKze0wXhr29V1LlQSMrl')
+    playlist_link = 'http://open.spotify.com/playlist/' + playlist_id
+    #sp.user_playlist_add_tracks(userID, playlist_id, track_ids, position=None
+    print(playlist_id)
+    return jsonify({
+        'playlist_id': playlist_id
+    })
     '''
 
     #Shortened url :)
@@ -109,8 +127,37 @@ def get_playlists_details():
     return playlists_html
     '''
 
-@app.route('/api/get_recs')
+@app.route('/api/get_recommendations', methods=['POST'])
 def get_recommendations():
+    response = request.get_json()
+    selected_playlist_id = response['selected_playlist_id']
+    playlistItems = sp.playlist_items(selected_playlist_id)['items']
+    songList = []
+    counter = 0
+    for pl in playlistItems:
+        if counter == 5:
+            break
+        songList.append(pl['track']['id'])
+        counter+=1
+    print(songList)
+    recsList = sp.recommendations(seed_tracks=songList)['tracks']
+    print(recsList)
+    track_names = [track['name'] for track in recsList]
+    track_artists = [track['artists'][0]['name'] for track in recsList]
+    track_imagelinks = [track['album']['images'][0]['url'] if len(track['album']['images']) > 0
+                        else default_image for track in recsList]
+    track_ids = [track['id'] for track in recsList]
+
+    print(track_names, track_artists, track_imagelinks, track_ids)
+    return jsonify({
+        'track_names': track_names,
+        'track_artists': track_artists,
+        'track_imagelinks' : track_imagelinks,
+        'track_ids' : track_ids
+    })
+
+@app.route('/api/get_recs_old')
+def get_recommendations_old():
 
     if not sp_oauth.validate_token(sp_oauth.get_cached_token()):
         auth_url = sp_oauth.get_authorize_url()
@@ -148,6 +195,7 @@ def logout():
 
     #Clears session id, sends them to reauth. Change landing to a login page instead eventually
     session.clear()
+    os.remove("./.cache")
     return redirect(url_for('home'))
 
 @app.route("/api/home", methods= ['GET'])
