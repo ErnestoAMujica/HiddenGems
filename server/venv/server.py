@@ -86,8 +86,15 @@ def get_playlists_details():
     playlist_ids = [iter['id'] for iter in playlists_items]
 
     default_image = 'https://shorturl.at/belHL'
-    playlist_imagelinks = [iter['images'][0]['url'] if len(iter['images']) > 0 
-                           else default_image for iter in playlists_items]
+    playlist_imagelinks = []
+    for iter in playlists_items:
+        if iter['images'] is not None and len(iter['images']) > 0:
+            playlist_imagelinks.append(iter['images'][0]['url'])
+        else:
+            playlist_imagelinks.append(default_image)
+    #playlist_imagelinks = [iter['images'][0]['url'] if len(iter['images']) > 0 
+     #                    else default_image for iter in playlists_items]
+    
     
     return jsonify({
         'playlist_names': playlist_names,
@@ -104,11 +111,11 @@ def create_playlist_from_tracks():
     currUser = sp.current_user()
     userID = currUser['id']
     print('in fetch')
-    #created_playlist = sp.user_playlist_create(userID,'Test Playlist 2', public=False, description = "Hidden Gems Playlist")
-    #playlist_id = (created_playlist['id'])
-    playlist_id = ('12bKze0wXhr29V1LlQSMrl')
+    created_playlist = sp.user_playlist_create(userID,'Test Playlist 2', public=False, description = "Hidden Gems Playlist")
+    playlist_id = (created_playlist['id'])
+    # playlist_id = ('12bKze0wXhr29V1LlQSMrl')
     playlist_link = 'http://open.spotify.com/playlist/' + playlist_id
-    #sp.user_playlist_add_tracks(userID, playlist_id, track_ids, position=None
+    sp.user_playlist_add_tracks(userID, playlist_id, track_ids, position=None)
     print(playlist_id)
     return jsonify({
         'playlist_id': playlist_id
@@ -132,16 +139,17 @@ def get_recommendations():
     response = request.get_json()
     selected_playlist_id = response['selected_playlist_id']
     playlistItems = sp.playlist_items(selected_playlist_id)['items']
-    songList = []
-    counter = 0
-    for pl in playlistItems:
-        if counter == 5:
-            break
-        songList.append(pl['track']['id'])
-        counter+=1
-    print(songList)
-    recsList = sp.recommendations(seed_tracks=songList)['tracks']
-    print(recsList)
+    recsList = []
+    while len(playlistItems) > 0:
+        songList = []
+        counter = 0
+        for pl in playlistItems:
+            if counter == 5:
+                break
+            songList.append(pl['track']['id'])
+            counter+=1
+        recsList += sp.recommendations(seed_tracks=songList)['tracks'][:5] #whatever this number is is how much we're taking from the 20 songs
+        playlistItems = playlistItems[5:]
     track_names = [track['name'] for track in recsList]
     track_artists = [track['artists'][0]['name'] for track in recsList]
     track_imagelinks = [track['album']['images'][0]['url'] if len(track['album']['images']) > 0
@@ -155,6 +163,37 @@ def get_recommendations():
         'track_imagelinks' : track_imagelinks,
         'track_ids' : track_ids
     })
+    
+    
+# Old recs algorithm part 2 (the one goatnesto made)
+# @app.route('/api/get_recommendations', methods=['POST'])
+# def get_recommendations():
+#     response = request.get_json()
+#     selected_playlist_id = response['selected_playlist_id']
+#     playlistItems = sp.playlist_items(selected_playlist_id)['items']
+#     songList = []
+#     counter = 0
+#     for pl in playlistItems:
+#         if counter == 5:
+#             break
+#         songList.append(pl['track']['id'])
+#         counter+=1
+#     print(songList)
+#     recsList = sp.recommendations(seed_tracks=songList)['tracks']
+#     print(recsList)
+#     track_names = [track['name'] for track in recsList]
+#     track_artists = [track['artists'][0]['name'] for track in recsList]
+#     track_imagelinks = [track['album']['images'][0]['url'] if len(track['album']['images']) > 0
+#                         else default_image for track in recsList]
+#     track_ids = [track['id'] for track in recsList]
+
+#     print(track_names, track_artists, track_imagelinks, track_ids)
+#     return jsonify({
+#         'track_names': track_names,
+#         'track_artists': track_artists,
+#         'track_imagelinks' : track_imagelinks,
+#         'track_ids' : track_ids
+#     })
 
 @app.route('/api/get_recs_old')
 def get_recommendations_old():
