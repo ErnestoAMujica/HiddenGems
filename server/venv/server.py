@@ -13,8 +13,8 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = './.flask_session/'
 
 #API keys, create your Spotify app on the dev portal and copy the info here
-client_id = ''
-client_secret = ''
+client_id = '016153359685433e9918f1e2398866e3'
+client_secret = 'a7887701714c4b218514b63848669e41'
 redirect_uri = 'http://localhost:8080/api/callback'
 
 #Scope permissions, add more permissions to the list as necessary when adding features
@@ -134,12 +134,24 @@ def create_playlist_from_tracks():
     return playlists_html
     '''
 
+# @app.route('/api/me/tracks/', methods=['GET'])
+# def check_saved_tracks():
+#     response = request.get_json()
+#     liked_songs = response['selected_playlist_id']
+#     playListItems = sp.playlist_items(liked_songs)['items']
+#     for track in playListItems:
+#         print(track['track']['name'])
+#     return jsonify({
+#         'liked_songs': playListItems
+#     })
+
 @app.route('/api/get_recommendations', methods=['POST'])
 def get_recommendations():
     response = request.get_json()
     selected_playlist_id = response['selected_playlist_id']
     playlistItems = sp.playlist_items(selected_playlist_id)['items']
     recsList = []
+    savedTracks = []
     while len(playlistItems) > 0:
         songList = []
         counter = 0
@@ -150,13 +162,19 @@ def get_recommendations():
             counter+=1
         recsList += sp.recommendations(seed_tracks=songList)['tracks'][:5] #whatever this number is is how much we're taking from the 20 songs
         playlistItems = playlistItems[5:]
+        # compare recsList with liked songs and remove duplicates
+        # should have basic logic for removing duplicates, and this is the right method but I'm getting a 403 forbidden when I test it in postman and also here, so maybe if someone else could test. thanks
+        # likedSongs = sp.current_user_saved_tracks()
+        # recsList = [track for track in recsList if track['id'] not in likedSongs]
+        
+    
     track_names = [track['name'] for track in recsList]
     track_artists = [track['artists'][0]['name'] for track in recsList]
     track_imagelinks = [track['album']['images'][0]['url'] if len(track['album']['images']) > 0
                         else default_image for track in recsList]
     track_ids = [track['id'] for track in recsList]
-
-    print(track_names, track_artists, track_imagelinks, track_ids)
+    
+    #print(track_names, track_artists, track_imagelinks, track_ids)
     return jsonify({
         'track_names': track_names,
         'track_artists': track_artists,
