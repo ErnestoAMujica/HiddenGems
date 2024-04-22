@@ -9,6 +9,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 function recs() {
@@ -65,8 +67,8 @@ function recs() {
   }
 
   const onSubmit = async() => {
-
-    let sendData = { "selected_tracks": trackIDs }
+    let playlistName = document.getElementById('playlistname').value
+    let sendData = { "selected_tracks": trackIDs , "playlist_name": playlistName}
 
     const response = await fetch("http://localhost:8080/api/create_playlist_from_tracks", {
       headers: {
@@ -82,8 +84,7 @@ function recs() {
     console.log(newPlaylistLink)
 
     //Add failure condition here and in server later
-
-    //location.assign('http://localhost:3000/pages/playlist_added' + '?plid=' + selectedPlaylistID)
+    location.assign('http://localhost:3000/pages/playlist_added' + '?plid=' + selectedPlaylistID)
   }
 
   return(
@@ -118,6 +119,9 @@ function recs() {
               </div>
               </CardContent>
             </Card>
+            <div className="text-sm p-2 font-light bg-accent text-accent-foreground transition-all">
+              <Input type="playlistname" id="playlistname" placeholder="Name the playlist..." />
+            </div>
             <Button onClick={onSubmit} className='border-zinc-500 text-zinc-300
             hover:border-zinc-200 hover:text-zinc-100 text-center
             transition-colors border px-8 my-3 w-full '

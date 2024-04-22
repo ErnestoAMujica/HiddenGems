@@ -13,8 +13,8 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = './.flask_session/'
 
 #API keys, create your Spotify app on the dev portal and copy the info here
-client_id = '016153359685433e9918f1e2398866e3'
-client_secret = 'a7887701714c4b218514b63848669e41'
+client_id = ''
+client_secret = ''
 redirect_uri = 'http://localhost:8080/api/callback'
 
 #Scope permissions, add more permissions to the list as necessary when adding features
@@ -107,11 +107,13 @@ def create_playlist_from_tracks():
 
     response = request.get_json(force=True)
     track_ids = response['selected_tracks']
-
+    playlist_name = response['playlist_name']
+    if playlist_name is None or len(playlist_name) < 1:
+        playlist_name = 'Recommended Playlist'
     currUser = sp.current_user()
     userID = currUser['id']
     print('in fetch')
-    created_playlist = sp.user_playlist_create(userID,'Test Playlist 2', public=False, description = "Hidden Gems Playlist")
+    created_playlist = sp.user_playlist_create(userID, playlist_name, public=False, description = "Hidden Gems Playlist")
     playlist_id = (created_playlist['id'])
     # playlist_id = ('12bKze0wXhr29V1LlQSMrl')
     playlist_link = 'http://open.spotify.com/playlist/' + playlist_id
