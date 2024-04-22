@@ -106,7 +106,8 @@ function main() {
             </Card>
             <Button onClick={onSubmit} className='border-zinc-500 text-zinc-300
             hover:border-zinc-200 hover:text-zinc-100 text-center
-            transition-colors border px-8 my-3 w-full '>
+            transition-colors border px-8 my-3 w-full '
+            style={{ backgroundColor: '#1DB954', color: 'white' }}>
               Submit
             </Button>
           </div>

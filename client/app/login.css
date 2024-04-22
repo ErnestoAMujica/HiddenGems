@@ -75,27 +75,29 @@
   }
 }
 
+/* made these bigger a little bit */
 .loginWrapper{
   @apply h-screen w-full flex justify-center items-center bg-primary
 }
 
 .formWrapper{
   @apply flex items-center bg-primary shadow-md rounded-xl 
-  overflow-hidden justify-center mx-6 md:w-auto my-4
-}
-
-.loginWrapper .center{
-  @apply bg-primary md:flex justify-center items-center flex-col
+  overflow-hidden justify-center mx-6 md:w-auto my-8; 
 }
 
 .loginWrapper .center .inner{
-  @apply px-4 py-4 my-4 mx-4 bg-secondary rounded-lg
+  @apply px-6 py-6 my-6 mx-6 bg-secondary rounded-lg; 
 }
 
 .loginWrapper .center .inner, .title{
-  @apply text-2xl font-semibold text-center
+  @apply text-3xl font-semibold text-center; 
 }
 
 .loginWrapper .center .inner p{
-  @apply text-sm text-center mb-3 font-normal
+  @apply text-lg text-center mb-4 font-normal; 
+}
+
+
+.button {
+  @apply bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full text-lg; 
 }
