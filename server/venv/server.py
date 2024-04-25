@@ -13,8 +13,8 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = './.flask_session/'
 
 #API keys, create your Spotify app on the dev portal and copy the info here
-client_id = '30d4d0ac180f4ef08c375c5044365b81'
-client_secret = 'f4f5d0b86e8c4e8e9651aa1f45dff1a8'
+client_id = ''
+client_secret = ''
 redirect_uri = 'http://localhost:8080/api/callback'
 
 #Scope permissions, add more permissions to the list as necessary when adding features
